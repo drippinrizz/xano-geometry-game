@@ -270,7 +270,7 @@ Tasks are ideal for automating recurring operations like generating reports or s
 ```xs
 api.lambda {
   code = """
-    // Javascript or Typescript code here
+    // Javascript or Typescript code goes here
     return $input.value > 10 ? true : false;
   timeout = 10
   """
@@ -395,6 +395,87 @@ array.merge $active_users {
 ```
 
 Combines another array or a single value into the target array, appending all elements from the provided `value`.
+
+# array.map
+
+```xs
+array.map ($json) {
+  by = $this.email
+} as $emails
+
+array.map ($json) {
+  by = {name: $this.name, gender: $this.gender}
+} as $people
+```
+
+Transforms each element in an array using a specified expression defined in `by`. The resulting array is stored in the variable specified by `as`.
+
+# array.partition
+
+```xs
+array.partition ($json) if ($this.gender == "male") as $is_male
+```
+
+Divides an array into two separate arrays based on a condition and stores the results in an object with a `true` and `false` key.
+
+results look like:
+
+```json
+{
+  "true": [
+    /* elements matching condition */
+  ],
+  "false": [
+    /* elements not matching condition */
+  ]
+}
+```
+
+# array.group_by
+
+```xs
+array.group_by ($users) {
+  by = $this.gender
+} as $user_by_gender
+```
+
+Groups elements in an array based on a specified key or expression defined in `by`.
+
+# array.union
+
+```xs
+// expects the result to be [1,2,3,4,5,6,7,8,9]
+array.union ([1,3,5,7,9]) {
+  value = [2,4,6,8]
+  by = $this
+} as $union
+```
+
+Combines two arrays into one, removing duplicate elements based on the expression defined in `by`.
+
+# array.difference
+
+```xs
+// expects the result to be [1,3,5,7,9]
+array.difference ([1,2,3,4,5,6,7,8,9]) {
+  value = [2,4,6,8]
+  by = $this
+} as $difference
+```
+
+Creates a new array containing elements from the original array that are not present in the provided `value` array, based on the expression defined in `by`.
+
+# array.intersection
+
+```xs
+// expects the result to be [2,4,6]
+array.intersection ([1,2,3,4,5,6,7]) {
+  value = [2,4,6,8]
+  by = $this
+} as $intersection
+```
+
+Generates a new array containing only the elements that exist in both the original array and the provided `value` array, based on the expression defined in `by`.
 
 # array.find_index
 
@@ -523,7 +604,7 @@ Removes a record from a database table (e.g., `comment`) based on a specified fi
 
 ```xs
 db.direct_query {
-  code = "SELECT * FROM users WHERE users.email = ?"
+  sql = "SELECT * FROM users WHERE users.email = ?"
   response_type = "list"
   arg = $input.email
 } as $query_results
@@ -651,7 +732,7 @@ Deletes all records from a specified database table (e.g., `user`). If `reset = 
 
 ```xs
 db.external.mssql.direct_query {
-  code = "SELECT * FROM orders WHERE orders.total > ?"
+  sql = "SELECT * FROM orders WHERE orders.total > ?"
   response_type = "list"
   connection_string = "mssql://db_user:db_password@server.com:1433/sales_db?sslmode=disabled"
   arg = $input.min_total
@@ -664,7 +745,7 @@ Executes a SQL query directly on an external Microsoft SQL Server database. The 
 
 ```xs
 db.external.mysql.direct_query {
-  code = "SELECT * FROM products WHERE products.category = ?"
+  sql = "SELECT * FROM products WHERE products.category = ?"
   response_type = "list"
   connection_string = "mysql://db_user:db_password@host.com:3306/inventory_db?sslmode=disabled"
   arg = $input.category
@@ -677,7 +758,7 @@ Runs a SQL query directly on an external MySQL database. The `response_type` det
 
 ```xs
 db.external.oracle.direct_query {
-  code = "SELECT * FROM employees WHERE employees.department = ?"
+  sql = "SELECT * FROM employees WHERE employees.department = ?"
   response_type = "list"
   connection_string = "oracle://db_user:db_password@server.com:1521/hr_db"
   arg = $input.department
@@ -690,7 +771,7 @@ Directly executes a SQL query on an external Oracle database. The `response_type
 
 ```xs
 db.external.postgres.direct_query {
-  code = "SELECT * FROM customers WHERE customers.last_purchase > ?"
+  sql = "SELECT * FROM customers WHERE customers.last_purchase > ?"
   response_type = "list"
   connection_string = "postgres://db_user:db_password@host.com:5432/shop_db?sslmode=prefer"
   arg = $input.date_threshold

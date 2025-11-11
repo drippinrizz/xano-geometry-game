@@ -147,6 +147,70 @@ The joins can be of type `inner`, `left`, or `right`, depending on your needs.
 
 Note that joining a table does not return its fields; it only allows you to use those fields in the `search` condition. If you wanted to return fields from the joined table, you would want to either use an `eval` to map some of the values retrieved from the join or use an `addon` which would fetch the related data separately.
 
+### Addon
+
+An Addon is a function that is running another query to fetch related data for each record returned by the main query. This is useful for fetching related records without using joins.
+
+For example, if you wanted to fetch blog posts along with their likes and comments, you could use addons like this (assuming you have `blog_post_likes` and `blog_post_comments` addons defined):
+
+```xs
+db.query blog_post {
+  where = $db.blog_post.author_id == $auth.id
+  sort = {blog_post.publication_date: "desc"}
+  return = {type: "list", paging: {page: 1, per_page: 25, totals: true}}
+  addon = [
+    {
+      name : "blog_post_like_count"
+      input: {blog_post_id: $output.id}
+      as   : "items.like_count"
+    }
+    {
+      name : "blog_post_comment_count"
+      input: {blog_post_id: $output.id}
+      as   : "items.comment_count"
+    }
+  ]
+} as $posts
+```
+
+The `blog_post_like_count` addon could be defined as:
+
+```xs
+addon blog_post_like_count {
+  input {
+    uuid blog_post_id? {
+      table = "blog_post"
+    }
+  }
+
+  stack {
+    db.query blog_post_like {
+      where = $db.blog_post_like.blog_post_id == $input.blog_post_id
+      return = {type: "count"}
+    }
+  }
+}
+```
+
+and the `blog_post_comment_count` addon could be defined as:
+
+```xs
+addon blog_post_comment_count {
+  input {
+    uuid blog_post_id? {
+      table = "blog_post"
+    }
+  }
+
+  stack {
+    db.query blog_post_comment {
+      where = $db.blog_post_comment.blog_post_id == $input.blog_post_id
+      return = {type: "count"}
+    }
+  }
+}
+```
+
 ### Eval
 
 Eval allows you to create computed fields based on existing fields in your database (or joined tables). You can define these computed fields using the `eval` argument, which takes an array of objects specifying the computation.

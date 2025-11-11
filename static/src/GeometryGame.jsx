@@ -1608,17 +1608,6 @@ export default function GeometryGame() {
           </button>
           <button 
             className="leaderboard-btn" 
-            onClick={() => setGodMode(!godMode)}
-            style={{
-              background: godMode ? 'rgba(255, 215, 0, 0.3)' : 'rgba(0, 245, 255, 0.2)',
-              borderColor: godMode ? '#ffd700' : '#00f5ff',
-              color: godMode ? '#ffd700' : '#00f5ff'
-            }}
-          >
-            {godMode ? '👑 GOD MODE' : '💀 Mortal'}
-          </button>
-          <button 
-            className="leaderboard-btn" 
             onClick={toggleMusic}
           >
             {musicMuted ? '🔇 Music Off' : '🎵 Music On'}
@@ -1650,12 +1639,6 @@ export default function GeometryGame() {
       <div className={`mobile-menu ${showMobileMenu ? 'active' : ''}`}>
           <button className="mobile-menu-item" onClick={() => { getLeaderboard(); setShowLeaderboardModal(true); setShowMobileMenu(false); }}>
             🏆 Leaderboard
-          </button>
-          <button 
-            className="mobile-menu-item"
-            onClick={() => { setGodMode(!godMode); setShowMobileMenu(false); }}
-          >
-            {godMode ? '👑 GOD MODE' : '💀 Mortal'}
           </button>
           <button className="mobile-menu-item" onClick={() => { toggleMusic(); setShowMobileMenu(false); }}>
             {musicMuted ? '🔇 Music Off' : '🎵 Music On'}

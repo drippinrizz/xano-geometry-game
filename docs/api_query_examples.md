@@ -28,9 +28,17 @@ query "blog_posts" verb=GET {
   }
 
   stack {
-    db.query "blog_post" {
+    db.query blog_post {
+      join = {
+        user: {
+          table: "user"
+          where: $db.blog_post.author_id == $db.user.id
+        }
+      }
+
       sort = {blog_post.publication_date: "desc"}
       override_sort = $input.sort
+      eval = {authorName: $db.user.name, status: $db.user.status}
       return = {
         type  : "list"
         paging: {
@@ -40,21 +48,18 @@ query "blog_posts" verb=GET {
         }
       }
 
-      addon = {
-        items.blog_post_likes   : {
+      addon = [
+        {
           name : "blog_post_likes"
           input: {blog_post_id: $output.id}
+          as   : "items.blog_post_likes"
         }
-        items.blog_post_comments: {
+        {
           name : "blog_post_comments"
           input: {blog_post_id: $output.id}
+          as   : "items.blog_post_comments"
         }
-        items.author            : {
-          name  : "author"
-          output: ["id", "name", "email", "is_active"]
-          input : {user_id: $output.author_id}
-        }
-      }
+      ]
     } as $posts
   }
 
@@ -735,20 +740,22 @@ query "blog_posts_by_user" verb=GET {
   }
 
   stack {
-    db.query "blog_post" {
+    db.query blog_post {
       where = $db.blog_post.author_id == $auth.id
       sort = {blog_post.publication_date: "desc"}
       return = {type: "list", paging: {page: 1, per_page: 25, totals: true}}
-      addon = {
-        items.blog_post_likes   : {
+      addon = [
+        {
           name : "blog_post_likes"
           input: {blog_post_id: $output.id}
+          as   : "items.blog_post_likes"
         }
-        items.blog_post_comments: {
+        {
           name : "blog_post_comments"
           input: {blog_post_id: $output.id}
+          as   : "items.blog_post_comments"
         }
-      }
+      ]
     } as $posts
   }
 
@@ -1153,15 +1160,16 @@ query "list_orders" verb=GET {
       value = ($input.year + 1) ~ "-01-01T00:00:00.000-08:00"
     }
 
-    db.query "orders" {
+    db.query orders {
       where = $db.orders.order_date >= $start_of_year && $db.orders.order_date < $end_of_year
       return = {type: "list"}
-      addon = {
-        _customer: {
+      addon = [
+        {
           name : "customer"
           input: {customer_id: $output.customer_id}
+          as   : "_customer"
         }
-      }
+      ]
     } as $orders
 
     util.template_engine {
