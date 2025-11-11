@@ -1,0 +1,11 @@
+{
+  "instanceName": "xxmf-qrth-inat",
+  "workspaceId": 16,
+  "branch": "v1",
+  "paths": {
+    "functions": "functions",
+    "tables": "tables",
+    "apis": "apis",
+    "tasks": "tasks"
+  }
+}

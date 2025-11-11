@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.cursor/
+.cursor-config.json
+
+# Build outputs
+dist/
+build/
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
+
+# System directories to exclude from home directory
+../**/.cache/
+../**/.config/
+../**/.local/
+../**/.gradle/
+../**/.docker/
+../**/.ssh/
+../**/.node_repl_history
+../**/.ollama/
+../**/.lesshst
+../**/.gitconfig
+../**/.boto
+../**/.matplotlib/
+../**/.codex/
+../**/.claude/
+../**/.EasyOCR/
+../**/.android/
+../**/AppData/
+../**/Application Data/
+../**/Cookies/
+../**/Local Settings/
+../**/My Documents/
+../**/NetHood/
+../**/PrintHood/
+../**/Recent/
+../**/SendTo/
+../**/Start Menu/
+../**/Templates/
+../**/NTUSER.DAT*
+../**/ntuser.dat*
+../**/venv/
+../**/scoop/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Xano specific
+.xano-cache/
+*.xano-temp
+
